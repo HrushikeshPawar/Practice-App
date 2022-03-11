@@ -1,7 +1,7 @@
 """
 This module provides our To-Do app with database functionality.
 """
-# todo/database.py
+# /todo/database.py
 
 import configparser
 import json

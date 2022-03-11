@@ -1,7 +1,7 @@
 """
 This module provides our To-Do app with config functionality.
 """
-# todo/config.py
+# /todo/config.py
 
 
 import configparser

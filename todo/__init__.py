@@ -3,7 +3,7 @@ Top level package of our To-Do App
 """
 # todo/__init__.py
 
-__app_name__    = 'To-Do'
+__app_name__    = 'todo'
 __version__     = '0.1.0'
 
 # Defining the List of Key Words
