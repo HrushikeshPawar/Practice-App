@@ -1,7 +1,7 @@
 """
-The To-Do entry point script.
+This module provides the entry point for our To-Do script.
 """
-# todo/__main__.py
+# /todo/__main__.py
 
 from todo import cli, __app_name__
 

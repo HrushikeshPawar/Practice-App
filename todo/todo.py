@@ -7,7 +7,7 @@ This is the heart of our To-Do app.
 from pathlib import Path
 from typing import Any, Dict, NamedTuple, List
 
-from todo import DB_READ_ERROR
+from todo import DB_READ_ERROR, ID_ERROR
 from .database import DBHandler
 
 
@@ -58,3 +58,27 @@ class Todoer:
         # Return Current Todolist
         read = self._db_handler.read_Todos()
         return read.todo_list
+
+    # Function to set the status of To-Do's as Done
+    def set_Done(self, id: int) -> CurrentTodo:
+
+        # Get the To-Do list from the DB
+        read = self._db_handler.read_Todos()
+
+        # Check if the To-Do ID is valid
+        if read.error:
+            return CurrentTodo({}, read.error)
+
+        # Get the To-Do from the DB
+        try:
+            Todo = read.todo_list[id - 1]
+
+        except IndexError:
+            return CurrentTodo({}, ID_ERROR)
+
+        # Set the To-Do as Done
+        Todo['Done'] = True
+
+        # Write to the DB
+        write = self._db_handler.write_Todos(read.todo_list)
+        return CurrentTodo(Todo, write.error)

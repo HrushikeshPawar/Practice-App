@@ -134,15 +134,51 @@ def list_all() -> None:
         for id, Todo in enumerate(todo_list, 1):
 
             desc, priority, done = Todo.values()
+
+            if done:
+                COLOR = typer.colors.GREEN
+
+            elif priority == 1:
+                COLOR = typer.colors.RED
+
+            else:
+                COLOR = typer.colors.YELLOW
+
             typer.secho(
                 f"{id}{(len(columns[0]) - len(str(id))) * ' '}"
                 f"| ({priority}){(len(columns[1]) - len(str(priority)) - 4) * ' '}"
                 f"| {done}{(len(columns[2]) - len(str(done)) - 2) * ' '}"
                 f"| {desc}",
-                fg=typer.colors.BLUE,
+                fg=COLOR,
             )
 
         typer.secho("-" * len(header) + "\n", fg=typer.colors.BLUE)
+
+
+# Define the Complete command for cli
+@app.command(name='complete')
+def set_done(id: int = typer.Argument(...)) -> None:
+
+    # Initialize the Todoer
+    todoer = get_todoer()
+
+    # Set the task as done
+    Todo, error = todoer.set_Done(id)
+
+    # Check for any errors
+    if error:
+        typer.secho(
+            f'Completing To-Do #{id} failed with {ERRORS[error]}',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+
+    # If no errors, print the task completed
+    else:
+        typer.secho(
+            f'To-Do #{id} - {Todo["Description"]} was completed',
+            fg=typer.colors.GREEN,
+        )
 
 
 # Define the version function
