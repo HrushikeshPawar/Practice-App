@@ -181,6 +181,109 @@ def set_done(id: int = typer.Argument(...)) -> None:
         )
 
 
+# Define the delete command for cli
+@app.command()
+def remove(
+    id: int = typer.Argument(...),
+    force: bool = typer.Option(
+        False,
+        '--force',
+        '-f',
+        help='Force delete the task without confirmation',
+    ),
+) -> None:
+
+    # Initialize the Todoer
+    todoer = get_todoer()
+
+    # The main remove fucntion
+    def _remove():
+        # Remove the task
+        Todo, error = todoer.remove(id)
+
+        # Check for any errors
+        if error:
+            typer.secho(
+                f'Removing To-Do #{id} failed with {ERRORS[error]}',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+
+        # If no errors, print the task removed
+        else:
+            typer.secho(
+                f'To-Do #{id} : {Todo["Description"]} was removed',
+                fg=typer.colors.GREEN,
+            )
+
+    # If force is True, remove the task without confirmation
+    if force:
+        _remove()
+
+    else:
+
+        # Get To-Do list
+        todo_list = todoer.get_Todo_list()
+
+        # Check if the task exists
+        try:
+            Todo = todo_list[id - 1]
+
+        except IndexError:
+            typer.secho(
+                f'To-Do #{id} does not exist',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+
+        # Ask for confirmation
+        if typer.confirm(
+            f'Are you sure you want to remove To-Do #{id} - {Todo["Description"]}?'
+        ):
+            _remove()
+        else:
+            typer.secho(
+                'To-Do not removed. Operation Cancelled',
+                fg=typer.colors.YELLOW,
+            )
+
+
+# Define the clear command for cli
+@app.command(name='clear')
+def remove_all(
+    force: bool = typer.Option(
+        ...,
+        prompt='Are you sure you want to remove all tasks?',
+        help='Force delete all tasks without confirmation',
+    ),
+) -> None:
+
+    # Initialize the Todoer
+    todoer = get_todoer()
+
+    # Check if force
+    if force:
+        error = todoer.remove_all().error
+
+        # If any error
+        if error:
+            typer.secho(
+                f'Removing all To-Do failed with {ERRORS[error]}',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+
+        # If no errors, print the task removed
+        else:
+            typer.secho(
+                'All To-Do were removed',
+                fg=typer.colors.GREEN,
+            )
+
+    else:
+        typer.secho('Operation Cancelled', fg=typer.colors.YELLOW)
+
+
 # Define the version function
 def _version_callback(value: bool) -> None:
 

@@ -82,3 +82,31 @@ class Todoer:
         # Write to the DB
         write = self._db_handler.write_Todos(read.todo_list)
         return CurrentTodo(Todo, write.error)
+
+    # Function to delete To-Do's from the DB
+    def remove(self, id: int) -> CurrentTodo:
+
+        # Read the DB
+        read = self._db_handler.read_Todos()
+
+        # Check for any errors
+        if read.error:
+            return CurrentTodo({}, read.error)
+
+        # Check if the To-Do ID is valid
+        try:
+            Todo = read.todo_list.pop(id - 1)
+
+        except IndexError:
+            return CurrentTodo({}, ID_ERROR)
+
+        # Remove the To-Do from the DB
+        write = self._db_handler.write_Todos(read.todo_list)
+        return CurrentTodo(Todo, write.error)
+
+    # Function to Clear the DB
+    def remove_all(self) -> CurrentTodo:
+
+        # Write an empty list to DB
+        write = self._db_handler.write_Todos([])
+        return CurrentTodo({}, write.error)
